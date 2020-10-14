@@ -2,11 +2,7 @@
   <div class="home">
     <div class="container">
       <div class="card question">
-        <p>
-          <span>1</span><span>+</span>
-          <span>1</span>
-          <span>+</span><span>2</span>
-        </p>
+        <p v-text="question"></p>
       </div>
       <div class="card answers">
         <p class="answer">1</p>
@@ -21,7 +17,45 @@
 <script>
 
 export default {
+  data() {
+    return {
+      question: '',
+      base: 1,
+      level: 1,
+      SEED: 1,
+    };
+  },
   name: 'Home',
+  created() {
+    this.generateQuestion();
+  },
+  methods: {
+    generateQuestion() {
+      const numbers = [];
+      const operations = [];
+      for (let counter = 0; counter < 3; counter += 1) {
+        numbers.push(this.base + this.RANDOM());
+      }
+      for (let operationsCounter = 0; operationsCounter < 2; operationsCounter += 1) {
+        operations.push((this.RANDOM()) ? '+' : '-');
+      }
+      this.question = this.concat(numbers, operations);
+    },
+    concat(numbers, operations) {
+      let concatenatedString = '';
+      numbers.forEach((number, index) => {
+        concatenatedString = concatenatedString.concat(number);
+        if (operations[index] !== undefined) {
+          concatenatedString = concatenatedString.concat(operations[index]);
+        }
+      });
+      console.log(concatenatedString, numbers, operations);
+      return concatenatedString;
+    },
+    RANDOM() {
+      return Math.round(Math.random() * this.SEED);
+    },
+  },
 };
 </script>
 <style lang="scss">
