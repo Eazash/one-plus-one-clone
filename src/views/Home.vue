@@ -5,7 +5,7 @@
         <p v-text="question"></p>
       </div>
       <div class="card answers">
-        <p class="answer">1</p>
+        <p class="answer" v-text="answer"></p>
         <p class="answer">2</p>
         <p class="answer">3</p>
         <p class="answer">4</p>
@@ -20,14 +20,16 @@ export default {
   data() {
     return {
       question: '',
+      answer: '',
       base: 1,
       level: 1,
       SEED: 1,
     };
   },
   name: 'Home',
-  created() {
+  mounted() {
     this.generateQuestion();
+    this.calculateAnswer();
   },
   methods: {
     generateQuestion() {
@@ -54,6 +56,25 @@ export default {
     },
     RANDOM() {
       return Math.round(Math.random() * this.SEED);
+    },
+    calculateAnswer() {
+      const operationTest = /(\d|-\d)[+-](\d|-\d)/;
+      let questionString = this.question;
+      let operation = operationTest.exec(questionString);
+      let result;
+      while (operation !== null) {
+        console.log(operation);
+        const [opString, number1, number2] = operation;
+        if (opString[1].includes('+')) {
+          result = parseInt(number1, 10) + parseInt(number2, 10);
+        } else {
+          result = parseInt(number1, 10) - parseInt(number2, 0);
+        }
+        questionString = questionString.replace(opString, result);
+        console.log(result, questionString);
+        operation = operationTest.exec(questionString);
+      }
+      this.answer = questionString;
     },
   },
 };
