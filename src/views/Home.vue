@@ -4,7 +4,7 @@
       <div class="card question">
         <p v-text="question"></p>
       </div>
-      <div class="card answers">
+      <div class="card answers" v-if="!fail">
         <answer-block
           v-for="answer in answers"
           :key="answer"
@@ -12,12 +12,9 @@
           @chosen="chosen"
         />
       </div>
-    </div>
-
-    <div class="container">
-      <div class="card fail" v-if="fail">
+      <div class="card fail" v-else>
         <div>
-          <h3>Game Over</h3>
+          <h2>Game Over</h2>
         </div>
         <div>
           <button @click="newGame">New Game</button>
@@ -191,6 +188,34 @@ export default {
     transition: all 0.3s;
     &:hover {
       box-shadow: 0 4px 5px grey;
+    }
+  }
+}
+.fail {
+  border: 2px solid red;
+  color: red;
+  text-align: center;
+  display: block;
+  padding: 1rem;
+  font-weight: 600;
+  h2 {
+    padding-bottom: 1rem;
+    border-bottom: 4px solid rgb(252, 126, 126);
+  }
+  button {
+    background: #e4e4e4;
+    outline: none;
+    border: none;
+    width: 220px;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1.25rem;
+    margin: 10px auto;
+    color: #42b983;
+    font-weight: 700;
+    transition: all 0.3s;
+    &:hover {
+      box-shadow: 1px 3px 6px grey;
     }
   }
 }
