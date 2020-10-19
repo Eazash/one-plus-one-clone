@@ -33,11 +33,14 @@ export default {
   },
   name: 'Home',
   mounted() {
-    this.generateQuestion();
-    this.calculateAnswer();
-    this.createAllAnswers();
+    this.newQuestion();
   },
   methods: {
+    newQuestion() {
+      this.generateQuestion();
+      this.calculateAnswer();
+      this.createAllAnswers();
+    },
     generateQuestion() {
       const numbers = [];
       const operations = [];
@@ -104,8 +107,10 @@ export default {
       }
       this.answers.push(this.answer);
     },
-    chosen(event) {
-      console.log(event)
+    chosen(number) {
+      if (number === this.answer) {
+        this.newQuestion();
+      };
     }
   },
 };
