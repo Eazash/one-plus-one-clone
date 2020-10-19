@@ -5,10 +5,12 @@
         <p v-text="question"></p>
       </div>
       <div class="card answers">
-        <p class="answer" v-text="answer"></p>
-        <p class="answer">2</p>
-        <p class="answer">3</p>
-        <p class="answer">4</p>
+        <p
+          class="answer"
+          v-for="answer in answers"
+          :key="answer"
+          v-text="answer"
+        ></p>
       </div>
     </div>
   </div>
@@ -24,12 +26,14 @@ export default {
       base: 1,
       level: 1,
       SEED: 1,
+      answers: [],
     };
   },
   name: 'Home',
   mounted() {
     this.generateQuestion();
     this.calculateAnswer();
+    this.createAllAnswers();
   },
   methods: {
     generateQuestion() {
@@ -54,8 +58,8 @@ export default {
       console.log(concatenatedString, numbers, operations);
       return concatenatedString;
     },
-    RANDOM() {
-      return Math.round(Math.random() * this.SEED);
+    RANDOM(deviation = 1) {
+      return Math.round(Math.random() * this.SEED * deviation);
     },
     calculateAnswer() {
       const operationTest = /(\d|-\d)[+-](\d|-\d)/;
@@ -74,7 +78,29 @@ export default {
         console.log(result, questionString);
         operation = operationTest.exec(questionString);
       }
-      this.answer = questionString;
+      this.answer = parseInt(questionString, 10);
+    },
+    createAllAnswers() {
+      const actual = parseInt(this.answer, 10);
+      let deviation = 1;
+      let wrongAnswer = 0;
+      this.answers = [];
+      while (this.answers.length < 3) {
+        const delta = this.RANDOM(deviation);
+        console.log(delta);
+        if (this.RANDOM(deviation) % 2 === 0) {
+          wrongAnswer = actual + delta;
+        } else {
+          wrongAnswer = actual - delta;
+        }
+        if (this.answers.includes(wrongAnswer) || wrongAnswer === actual || wrongAnswer === 0) {
+          deviation += 1;
+          continue;
+        } else {
+          this.answers.push(wrongAnswer);
+        }
+      }
+      this.answers.push(this.answer);
     },
   },
 };
