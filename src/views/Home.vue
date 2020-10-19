@@ -40,6 +40,7 @@ export default {
       this.generateQuestion();
       this.calculateAnswer();
       this.createAllAnswers();
+      this.shuffleAnswers();
     },
     generateQuestion() {
       const numbers = [];
@@ -106,6 +107,10 @@ export default {
         }
       }
       this.answers.push(this.answer);
+    },
+    shuffleAnswers() {
+      const shuffle = () => { return this.RANDOM(1) - 1 };
+      this.answers.sort(shuffle);
     },
     chosen(number) {
       if (number === this.answer) {
