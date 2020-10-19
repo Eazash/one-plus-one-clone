@@ -13,6 +13,17 @@
         />
       </div>
     </div>
+
+    <div class="container">
+      <div class="card fail" v-if="fail">
+        <div>
+          <h3>Game Over</h3>
+        </div>
+        <div>
+          <button @click="newGame">New Game</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -29,6 +40,8 @@ export default {
       level: 1,
       SEED: 1,
       answers: [],
+      fail: false,
+      round: 1
     };
   },
   name: 'Home',
@@ -36,11 +49,20 @@ export default {
     this.newQuestion();
   },
   methods: {
+    newGame() {
+      this.fail = false;
+      this.round = 1;
+      this.newQuestion;
+    },
+    gameOver() {
+      this.fail = true;
+    },
     newQuestion() {
       this.generateQuestion();
       this.calculateAnswer();
       this.createAllAnswers();
       this.shuffleAnswers();
+      this.round++;
     },
     generateQuestion() {
       const numbers = [];
@@ -115,6 +137,8 @@ export default {
     chosen(number) {
       if (number === this.answer) {
         this.newQuestion();
+      } else {
+        this.gameOver();
       };
     }
   },
