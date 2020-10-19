@@ -5,20 +5,22 @@
         <p v-text="question"></p>
       </div>
       <div class="card answers">
-        <p
-          class="answer"
+        <answer-block
           v-for="answer in answers"
           :key="answer"
-          v-text="answer"
-        ></p>
+          :number="answer"
+          @chosen="chosen"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import AnswerBlock from '@/components/AnswerBlock.vue';
 
 export default {
+  components: { AnswerBlock: AnswerBlock },
   data() {
     return {
       question: '',
@@ -102,6 +104,9 @@ export default {
       }
       this.answers.push(this.answer);
     },
+    chosen(event) {
+      console.log(event)
+    }
   },
 };
 </script>
