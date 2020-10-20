@@ -26,6 +26,7 @@
 
 <script>
 import AnswerBlock from '@/components/AnswerBlock.vue';
+import { addSeconds, differenceInSeconds } from 'date-fns'
 
 export default {
   components: { AnswerBlock: AnswerBlock },
@@ -38,12 +39,21 @@ export default {
       SEED: 1,
       answers: [],
       fail: false,
-      round: 1
+      round: 1,
+      now: new Date(),
+      interval: 0,
+      deadline: addSeconds(new Date(), 30),
+      timeToAnswer: 30
     };
   },
   name: 'Home',
   mounted() {
     this.newQuestion();
+  },
+  computed: {
+    remainingTime() {
+      return differenceInSeconds(this.deadline, this.now)
+    }
   },
   methods: {
     newGame() {
@@ -60,6 +70,7 @@ export default {
       this.createAllAnswers();
       this.shuffleAnswers();
       this.round++;
+      this.interval = setInterval(() => this.now = new Date(), 1000)
     },
     generateQuestion() {
       const numbers = [];
@@ -135,6 +146,15 @@ export default {
       if (number === this.answer) {
         this.newQuestion();
       } else {
+        this.gameOver();
+      };
+    }
+  },
+  watch: {
+    remainingTime: function (value) {
+      console.log(value)
+      if (value <= 0) {
+        clearInterval(this.interval);
         this.gameOver();
       };
     }
