@@ -1,6 +1,6 @@
 <template>
-  <div class="answer">
-    <p v-text="number" @click="selected"></p>
+  <div class="answer" @click="selected">
+    <p v-text="number"></p>
   </div>
 </template>
 

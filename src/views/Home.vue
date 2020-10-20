@@ -10,6 +10,8 @@
           :key="answer"
           :number="answer"
           @chosen="chosen"
+          :total="timeToAnswer"
+          :remaining="remainingTime"
         />
       </div>
       <div class="card fail" v-else>
@@ -51,17 +53,24 @@ export default {
     this.newQuestion();
   },
   computed: {
-    remainingTime() {
-      return differenceInSeconds(this.deadline, this.now)
+    remainingTime: {
+      get: function () {
+        return differenceInSeconds(this.deadline, this.now)
+      },
+      set: function (newValue) {
+        this.deadline = addSeconds(new Date(), newValue);
+      }
     }
   },
   methods: {
     newGame() {
       this.fail = false;
       this.round = 1;
-      this.newQuestion;
+      this.newQuestion();
     },
     gameOver() {
+      this.remainingTime = 0;
+      clearInterval(this.interval);
       this.fail = true;
     },
     newQuestion() {
@@ -70,7 +79,8 @@ export default {
       this.createAllAnswers();
       this.shuffleAnswers();
       this.round++;
-      this.interval = setInterval(() => this.now = new Date(), 1000)
+      this.remainingTime = this.timeToAnswer;
+      this.interval = setInterval(() => this.now = new Date(), 500)
     },
     generateQuestion() {
       const numbers = [];
@@ -153,8 +163,7 @@ export default {
   watch: {
     remainingTime: function (value) {
       console.log(value)
-      if (value <= 0) {
-        clearInterval(this.interval);
+      if (value <= 0 && !this.fail) {
         this.gameOver();
       };
     }
