@@ -99,7 +99,6 @@ export default {
           concatenatedString = concatenatedString.concat(operations[index]);
         }
       });
-      console.log(concatenatedString, numbers, operations);
       return concatenatedString;
     },
     RANDOM(deviation = 1) {
@@ -111,7 +110,6 @@ export default {
       let operation = operationTest.exec(questionString);
       let result;
       while (operation !== null) {
-        console.log(operation);
         const [opString, number1, number2] = operation;
         if (opString[1].includes('+')) {
           result = parseInt(number1, 10) + parseInt(number2, 10);
@@ -119,7 +117,6 @@ export default {
           result = parseInt(number1, 10) - parseInt(number2, 0);
         }
         questionString = questionString.replace(opString, result);
-        console.log(result, questionString);
         operation = operationTest.exec(questionString);
       }
       this.answer = parseInt(questionString, 10);
@@ -131,7 +128,6 @@ export default {
       this.answers = [];
       while (this.answers.length < 3) {
         const delta = this.RANDOM(deviation);
-        console.log(delta);
         if (this.RANDOM(deviation) % 2 === 0) {
           wrongAnswer = actual + delta;
         } else {
@@ -160,7 +156,6 @@ export default {
   },
   watch: {
     remainingTime: function (value) {
-      console.log(value)
       if (value <= 0 && !this.fail) {
         this.gameOver();
       };
