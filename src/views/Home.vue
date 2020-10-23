@@ -30,7 +30,7 @@
 <script>
 import AnswerBlock from '@/components/AnswerBlock.vue';
 import ProgressBar from '@/components/ProgressBar.vue'
-import { addSeconds, differenceInSeconds } from 'date-fns'
+import { addSeconds, differenceInMilliseconds } from 'date-fns'
 
 export default {
   components: { AnswerBlock, ProgressBar },
@@ -55,13 +55,8 @@ export default {
     this.newQuestion();
   },
   computed: {
-    remainingTime: {
-      get: function () {
-        return differenceInSeconds(this.deadline, this.now)
-      },
-      set: function (newValue) {
-        this.deadline = addSeconds(new Date(), newValue);
-      }
+    remainingTime: function () {
+      return (differenceInMilliseconds(this.deadline, this.now) / 1000)
     }
   },
   methods: {
@@ -71,9 +66,9 @@ export default {
       this.newQuestion();
     },
     gameOver() {
-      this.remainingTime = 0;
       clearInterval(this.interval);
       this.fail = true;
+      this.deadline = this.now;
     },
     newQuestion() {
       this.generateQuestion();
@@ -81,8 +76,9 @@ export default {
       this.createAllAnswers();
       this.shuffleAnswers();
       this.round++;
-      this.remainingTime = this.timeToAnswer;
-      this.interval = setInterval(() => this.now = new Date(), 500)
+      this.now = new Date();
+      this.interval = setInterval(() => this.now = new Date(), 500);
+      this.deadline = addSeconds(this.now, this.timeToAnswer);
     },
     generateQuestion() {
       const numbers = [];
