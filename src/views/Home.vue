@@ -3,15 +3,16 @@
     <div class="container">
       <div class="card question">
         <p v-text="question"></p>
+        <progress-bar :max="timeToAnswer" :current="remainingTime">
+        </progress-bar>
       </div>
       <div class="card answers" v-if="!fail">
         <answer-block
           v-for="answer in answers"
+          class="answer"
           :key="answer"
           :number="answer"
           @chosen="chosen"
-          :total="timeToAnswer"
-          :remaining="remainingTime"
         />
       </div>
       <div class="card fail" v-else>
@@ -28,10 +29,11 @@
 
 <script>
 import AnswerBlock from '@/components/AnswerBlock.vue';
+import ProgressBar from '@/components/ProgressBar.vue'
 import { addSeconds, differenceInSeconds } from 'date-fns'
 
 export default {
-  components: { AnswerBlock: AnswerBlock },
+  components: { AnswerBlock, ProgressBar },
   data() {
     return {
       question: '',
@@ -49,7 +51,7 @@ export default {
     };
   },
   name: 'Home',
-  mounted() {
+  created() {
     this.newQuestion();
   },
   computed: {
@@ -189,6 +191,7 @@ export default {
   border: 1px solid grey;
   border-radius: 3px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   p {
     min-width: 50%;
@@ -206,7 +209,6 @@ export default {
   height: 40vh;
   font-weight: 600;
   font-size: 1rem;
-  flex-direction: column;
   .answer {
     width: 80%;
     margin: auto 0;

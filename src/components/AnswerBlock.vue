@@ -1,5 +1,5 @@
 <template>
-  <div class="answer" @click="selected">
+  <div @click="selected">
     <p v-text="number"></p>
   </div>
 </template>
