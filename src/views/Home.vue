@@ -77,7 +77,7 @@ export default {
       this.shuffleAnswers();
       this.round++;
       this.now = new Date();
-      this.interval = setInterval(() => this.now = new Date(), 500);
+      this.interval = setInterval(() => this.now = new Date(), 200);
       this.deadline = addSeconds(this.now, this.timeToAnswer);
     },
     generateQuestion() {

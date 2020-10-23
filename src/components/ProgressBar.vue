@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     percentage: function () {
-      return Math.floor((this.current / this.max) * 100);
+      return ((this.current / this.max) * 100).toPrecision(4);
     },
     width: function () {
       return this.percentage + "%";
@@ -45,5 +45,6 @@ export default {
   height: 10px;
   margin: 0 !important;
   text-align: center;
+  transition: linear 0.2s;
 }
 </style>
