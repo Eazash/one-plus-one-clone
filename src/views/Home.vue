@@ -2,7 +2,7 @@
   <div class="home">
     <div class="container">
       <div class="card question">
-        <p v-text="question"></p>
+        <p v-text="questionString"></p>
         <progress-bar :max="timeToAnswer" :current="remainingTime">
         </progress-bar>
       </div>
@@ -36,18 +36,19 @@ export default {
   components: { AnswerBlock, ProgressBar },
   data() {
     return {
-      question: '',
+      questionString: '',
       answer: '',
       base: 1,
       level: 1,
-      SEED: 1,
       answers: [],
       fail: false,
       round: 1,
       now: new Date(),
       interval: 0,
       deadline: addSeconds(new Date(), 30),
-      timeToAnswer: 30
+      timeToAnswer: 30,
+      positives: [],
+      negatives: []
     };
   },
   name: 'Home',
@@ -57,7 +58,13 @@ export default {
   computed: {
     remainingTime: function () {
       return (differenceInMilliseconds(this.deadline, this.now) / 1000)
-    }
+    },
+    sumOfPositives: function () {
+      return this.positives.reduce(this.add);
+    },
+    sumOfNegatives: function () {
+      return this.negatives.reduce(this.add);
+    },
   },
   methods: {
     newGame() {
@@ -72,7 +79,7 @@ export default {
     },
     newQuestion() {
       this.generateQuestion();
-      this.calculateAnswer();
+      this.createQuestionString();
       this.createAllAnswers();
       this.shuffleAnswers();
       this.round++;
@@ -81,45 +88,36 @@ export default {
       this.deadline = addSeconds(this.now, this.timeToAnswer);
     },
     generateQuestion() {
-      const numbers = [];
-      const operations = [];
-      for (let counter = 0; counter < 3; counter += 1) {
-        numbers.push(this.base + this.RANDOM());
-      }
-      for (let operationsCounter = 0; operationsCounter < 2; operationsCounter += 1) {
-        operations.push((this.RANDOM()) ? '+' : '-');
-      }
-      this.question = this.concat(numbers, operations);
-    },
-    concat(numbers, operations) {
-      let concatenatedString = '';
-      numbers.forEach((number, index) => {
-        concatenatedString = concatenatedString.concat(number);
-        if (operations[index] !== undefined) {
-          concatenatedString = concatenatedString.concat(operations[index]);
+      this.negatives = [];
+      this.positives = [];
+      do {
+        this.positives.push(this.base + this.RANDOM());
+      } while (this.positives.length < 3)
+      do {
+        this.negatives.push(-1 * (this.base + this.RANDOM()))
+        if (this.sumOfNegatives > this.sumOfPositives) {
+          this.negatives.pop();
+          break;
         }
-      });
-      return concatenatedString;
+      } while (this.negatives.length < 1)
+      this.answer = this.sumOfPositives + this.sumOfNegatives;
     },
-    RANDOM(deviation = 1) {
-      return Math.round(Math.random() * this.SEED * deviation);
+    createQuestionString() {
+      const numbers = [...this.positives, ...this.negatives];
+      numbers.sort(this.shuffle);
+      const numbersString = numbers.join('+');
+      this.questionString = numbersString.replace("+-", "-");
     },
-    calculateAnswer() {
-      const operationTest = /(\d|-\d)[+-](\d|-\d)/;
-      let questionString = this.question;
-      let operation = operationTest.exec(questionString);
-      let result;
-      while (operation !== null) {
-        const [opString, number1, number2] = operation;
-        if (opString[1].includes('+')) {
-          result = parseInt(number1, 10) + parseInt(number2, 10);
-        } else {
-          result = parseInt(number1, 10) - parseInt(number2, 0);
-        }
-        questionString = questionString.replace(opString, result);
-        operation = operationTest.exec(questionString);
-      }
-      this.answer = parseInt(questionString, 10);
+    add: (total, value) => {
+      return total + value
+    },
+    shuffle() {
+      let rand = this.RANDOM(2, - 2)
+      console.log(rand)
+      return rand
+    },
+    RANDOM(max = 1, min = 0) {
+      return min + Math.round(Math.random() * max);
     },
     createAllAnswers() {
       const actual = parseInt(this.answer, 10);
@@ -143,8 +141,7 @@ export default {
       this.answers.push(this.answer);
     },
     shuffleAnswers() {
-      const shuffle = () => { return this.RANDOM(1) - 1 };
-      this.answers.sort(shuffle);
+      this.answers.sort(this.shuffle);
     },
     chosen(number) {
       if (number === this.answer) {
