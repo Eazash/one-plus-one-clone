@@ -81,7 +81,6 @@ export default {
       this.generateQuestion();
       this.createQuestionString();
       this.createAllAnswers();
-      this.shuffleAnswers();
       this.round++;
       this.now = new Date();
       this.interval = setInterval(() => this.now = new Date(), 200);
@@ -91,7 +90,7 @@ export default {
       this.negatives = [];
       this.positives = [];
       do {
-        this.positives.push(this.base + this.RANDOM());
+        this.positives.push(this.base + this.RANDOM(2));
       } while (this.positives.length < 3)
       do {
         this.negatives.push(-1 * (this.base + this.RANDOM()))
@@ -103,21 +102,23 @@ export default {
       this.answer = this.sumOfPositives + this.sumOfNegatives;
     },
     createQuestionString() {
-      const numbers = [...this.positives, ...this.negatives];
-      numbers.sort(this.shuffle);
+      let numbers = [...this.positives, ...this.negatives];
+      numbers = this.shuffle(numbers);
       const numbersString = numbers.join('+');
       this.questionString = numbersString.replace("+-", "-");
     },
     add: (total, value) => {
       return total + value
     },
-    shuffle() {
-      let rand = this.RANDOM(2, - 2)
-      console.log(rand)
-      return rand
+    shuffle(array) {
+      for (let i = array.length - 1; i >= 0; i--) {
+        const j = this.RANDOM(i);
+        [array[i], array[j]] = [array[j], array[i]]
+      }
+      return array;
     },
     RANDOM(max = 1, min = 0) {
-      return min + Math.round(Math.random() * max);
+      return min + Math.floor(Math.random() * max);
     },
     createAllAnswers() {
       const actual = parseInt(this.answer, 10);
@@ -139,9 +140,7 @@ export default {
         }
       }
       this.answers.push(this.answer);
-    },
-    shuffleAnswers() {
-      this.answers.sort(this.shuffle);
+      this.answers = this.shuffle(this.answers);
     },
     chosen(number) {
       if (number === this.answer) {
