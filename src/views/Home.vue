@@ -1,22 +1,24 @@
 <template>
   <div class="home">
     <div class="container">
-      <div class="card question">
-        <p v-text="questionString"></p>
-        <progress-bar :max="timeToAnswer" :current="remainingTime">
-        </progress-bar>
-      </div>
-      <div class="card answers" v-if="!fail">
-        <answer-block
-          v-for="answer in answers"
-          class="answer"
-          :key="answer"
-          :number="answer"
-          @chosen="chosen"
-        />
-      </div>
-      <div class="card fail" v-else>
-        <div>
+      <template v-if="playing">
+        <div class="card question">
+          <p v-text="questionString"></p>
+          <progress-bar :max="timeToAnswer" :current="remainingTime">
+          </progress-bar>
+        </div>
+        <div class="card answers">
+          <answer-block
+            v-for="answer in answers"
+            class="answer"
+            :key="answer"
+            :number="answer"
+            @chosen="chosen"
+          />
+        </div>
+      </template>
+      <div class="card new-game" v-else>
+        <div class="fail" v-if="fail">
           <h2>Game Over</h2>
         </div>
         <div>
@@ -41,14 +43,15 @@ export default {
       base: 1,
       level: 1,
       answers: [],
-      fail: false,
       round: 0,
       now: new Date(),
       interval: 0,
       deadline: addSeconds(new Date(), 30),
       timeToAnswer: 30,
       positives: [],
-      negatives: []
+      negatives: [],
+      fail: false,
+      playing: false
     };
   },
   name: 'Home',
@@ -68,6 +71,7 @@ export default {
   },
   methods: {
     newGame() {
+      this.playing = true;
       this.fail = false;
       this.round = 0;
       this.newQuestion();
@@ -75,6 +79,7 @@ export default {
     gameOver() {
       clearInterval(this.interval);
       this.fail = true;
+      this.playing = false
       this.deadline = this.now;
     },
     newQuestion() {
@@ -210,16 +215,17 @@ export default {
   }
 }
 .fail {
-  border: 2px solid red;
   color: red;
-  text-align: center;
-  display: block;
-  padding: 1rem;
-  font-weight: 600;
   h2 {
     padding-bottom: 1rem;
     border-bottom: 4px solid rgb(252, 126, 126);
   }
+}
+.new-game {
+  text-align: center;
+  display: block;
+  padding: 1rem;
+  font-weight: 600;
   button {
     background: #e4e4e4;
     outline: none;
