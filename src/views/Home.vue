@@ -42,7 +42,7 @@ export default {
       level: 1,
       answers: [],
       fail: false,
-      round: 1,
+      round: 0,
       now: new Date(),
       interval: 0,
       deadline: addSeconds(new Date(), 30),
@@ -69,7 +69,7 @@ export default {
   methods: {
     newGame() {
       this.fail = false;
-      this.round = 1;
+      this.round = 0;
       this.newQuestion();
     },
     gameOver() {
